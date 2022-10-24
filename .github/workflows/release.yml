@@ -12,6 +12,10 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
+      # https://github.com/marketplace/actions/checkout`
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
       - name: Run CI
         uses: ./.github/workflows/ci.yml
 
