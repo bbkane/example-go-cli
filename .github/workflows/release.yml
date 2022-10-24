@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run CI
-        uses: ./ci.yml
+        uses: ./.github/workflows/ci.yml
 
       # https://github.com/marketplace/actions/goreleaser-action
       - name: Run GoReleaser
