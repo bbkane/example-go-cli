@@ -12,7 +12,8 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(
+	fmt.Printf(
+		"%s%s\n",
 		color.Add(color.FgRed, "FgRed"),
 	)
 }
