@@ -13,6 +13,7 @@ jobs:
   setup:
     name: Release
     runs-on: ubuntu-latest
+    needs: ci
     steps:
       # https://github.com/marketplace/actions/checkout`
       - name: Checkout Repo
