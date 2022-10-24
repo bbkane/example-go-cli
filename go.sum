@@ -1,0 +1,4 @@
+go.bbkane.com/gocolor v0.0.4 h1:UI4ejgjHdC6oupH8src8+FQgbbfcZ6C7BSPZzecBjzs=
+go.bbkane.com/gocolor v0.0.4/go.mod h1:7AEOm8kyPlpj9qr/SL9mEXSceh8xM2w+eBm4deMRNHk=
+golang.org/x/sys v0.0.0-20220204135822-1c1b9b1eba6a h1:ppl5mZgokTT8uPkmYOyEUmPTr3ypaKkg5eFOGrAmxxE=
+golang.org/x/sys v0.0.0-20220204135822-1c1b9b1eba6a/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=

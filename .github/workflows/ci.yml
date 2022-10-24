@@ -26,6 +26,7 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: go.mod
+          # requires go.sum file (i.e., external libraries)
           cache: true
 
       # https://github.com/marketplace/actions/run-golangci-lint#how-to-use
