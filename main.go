@@ -1,18 +1,33 @@
 package main
 
 import (
-	"fmt"
+	"os"
 
-	"go.bbkane.com/gocolor"
+	"go.bbkane.com/warg"
+	"go.bbkane.com/warg/command"
+	"go.bbkane.com/warg/section"
 )
 
-func main() {
-	color, err := gocolor.Prepare(true)
-	if err != nil {
-		panic(err)
-	}
+var version string
 
-	fmt.Println(
-		color.Add(color.FgRed, "FgRed"),
+func buildApp() warg.App {
+	app := warg.New(
+		"example-go-cli",
+		section.New(
+			"Example Go CLI",
+			section.Command(
+				"hello",
+				"Say hello",
+				command.DoNothing,
+			),
+		),
+		warg.AddColorFlag(),
+		warg.AddVersionCommand(version),
 	)
+	return app
+}
+
+func main() {
+	app := buildApp()
+	app.MustRun(os.Args, os.LookupEnv)
 }
