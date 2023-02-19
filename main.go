@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"go.bbkane.com/warg"
-	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/section"
 )
 
@@ -18,7 +17,7 @@ func buildApp() warg.App {
 			section.Command(
 				"hello",
 				"Say hello",
-				command.DoNothing,
+				hello,
 			),
 		),
 		warg.AddColorFlag(),
