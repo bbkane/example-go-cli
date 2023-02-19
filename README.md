@@ -26,4 +26,4 @@ scoop install bbkane/example-go-cli
 
 ## Notes
 
-See [./CONTRIBUTING.md](./CONTRIBUTING.md) for contributions!
+See [Go Developer Tooling](https://www.bbkane.com/blog/go-developer-tooling/) for notes on development tooling.
