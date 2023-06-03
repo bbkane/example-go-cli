@@ -10,3 +10,5 @@ pre-commit:
       run: golangci-lint run
     go-test:
       run: go test ./...
+    yamllint:
+      run: yamllint .
