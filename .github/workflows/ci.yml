@@ -33,3 +33,9 @@ jobs:
 
       - name: go test
         run: go test -v ./...
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Lint YAML files
+        run: yamllint .
