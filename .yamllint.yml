@@ -2,11 +2,11 @@ extends: default
 
 rules:
   comments:
-    require-starting-space: true
-    min-spaces-from-content: 2
     ignore-shebangs: true
+    min-spaces-from-content: 2
+    require-starting-space: true
   document-start: disable
   key-duplicates: disable
-  # key-ordering: enable
+  key-ordering: disable
   line-length: disable
   trailing-spaces: disable
