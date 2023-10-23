@@ -6,7 +6,6 @@ before:
     - go mod download
     # you may remove this if you don't need go generate
     # - go generate ./...
-
 builds:
   - env:
       - CGO_ENABLED=0
@@ -20,7 +19,7 @@ builds:
       # - arm64
       # - i386  # does anyone care about i386?
     ldflags:
-      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}} -X main.builtBy=goreleaser
+      - -s -w -X main.version=v{{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}} -X main.builtBy=goreleaser
 checksum:
   name_template: "checksums.txt"
 changelog:
@@ -29,7 +28,6 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
-
 # https://goreleaser.com/customization/homebrew/
 brews:
   - tap:
@@ -79,7 +77,6 @@ brews:
     #     </array>
     #   </dict>
     #   </plist>
-
 # https://goreleaser.com/customization/scoop/
 scoop:
   bucket:
