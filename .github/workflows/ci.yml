@@ -22,10 +22,6 @@ jobs:
         run: pip install yamllint
       - name: Lint YAML files
         run: yamllint .
-      - name: Install yamllint
-        run: pip install yamllint
-      - name: Lint YAML files
-        run: yamllint .
 name: CI
 on: # yamllint disable-line rule:truthy
   pull_request:
