@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	"go.bbkane.com/warg"
 	"go.bbkane.com/warg/section"
 )
@@ -19,14 +17,15 @@ func buildApp() warg.App {
 				"Say hello",
 				hello,
 			),
+			section.ExistingCommand("version", warg.VersionCommand()),
 		),
-		warg.AddColorFlag(),
-		warg.AddVersionCommand(version),
+		warg.ExistingGlobalFlag("--color", warg.ColorFlag()),
+		warg.OverrideVersion(version),
 	)
 	return app
 }
 
 func main() {
 	app := buildApp()
-	app.MustRun(os.Args, os.LookupEnv)
+	app.MustRun()
 }
