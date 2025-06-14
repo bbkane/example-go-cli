@@ -2,6 +2,10 @@
 
 An example go CLI to demo and learn new Go tooling!
 
+## Project status (2025-06-13)
+
+I use `example-go-cli` to test CI/CD, so it's not really useful to anyone else.
+
 ## Convert to a new project
 
 See [Go Project Notes](https://www.bbkane.com/blog/go-project-notes/#creating-a-new-go-project).

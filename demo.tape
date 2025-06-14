@@ -13,9 +13,11 @@ Set Height 650
 Set Width 1050
 Set Padding 50
 
-# https://github.com/charmbracelet/vhs/issues/39#issuecomment-1296334921
 Hide
-Sleep 3s
+Type 'setopt interactive_comments'
+Enter
+Type 'clear'
+Enter
 Show
 
 Type "example-go-cli hello"
