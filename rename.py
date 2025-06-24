@@ -82,12 +82,25 @@ def run(*args: str):
     logger.info(f"Running command: {shlex.join(args)}")
     res = subprocess.run(
         args,
-        check=True,
         encoding="utf-8",
-        stdout=subprocess.PIPE,
+        capture_output=True,
         text=True,
     )
-    logger.debug(f"stdout:\n{res.stdout}")
+    level = logging.DEBUG
+    if res.returncode != 0:
+        level = logging.ERROR
+        logger.error(f"Command failed with return code: {res.returncode}")
+    if res.stdout:
+        logger.log(level, f"stdout:\n{res.stdout}")
+    else:
+        logger.log(level, "no stdout")
+    if res.stderr:
+        logger.log(level, f"stderr:\n{res.stderr}")
+    else:
+        logger.log(level, "no stderr")
+
+    if res.returncode != 0:
+        sys.exit(res.returncode)
 
 
 def main():
@@ -107,8 +120,8 @@ def main():
     logger.info("Copying: %s to %s", src_dir, dest_dir)
     shutil.copytree(src_dir, dest_dir)
 
+    logger.debug("Changing working directory to: %s", os.getcwd())
     os.chdir(dest_dir)
-    logger.debug("Changed working directory to: %s", os.getcwd())
 
     # git clean
     logger.info("Cleaning git repository in: %s", dest_dir)
@@ -145,8 +158,16 @@ def main():
     logger.info("Initializing new git repository in: %s", dest_dir)
     run("git", "init")
     run("git", "add", ".")
-    run("git", "commit", "-m", shlex.quote(f"Initial commit for {args.name}"))
+    run("git", "commit", "-m", f"Initial commit for {args.name}")
     logger.info("First commit in: %s", dest_dir)
+
+    # create upstream repo, add go topic, and push
+    logger.info("Creating upstream repository for %s", args.name)
+    run("gh", "repo", "create", args.name, "--public", "--source", ".", "--remote", "origin")  # noqa: E501
+    logger.info("Adding 'go' topic to repo")
+    run("gh", "repo", "edit", "--add-topic", "go")
+    logger.info("pushing")
+    run("git", "push")
 
     logger.info("Continue steps at: https://www.bbkane.com/blog/go-project-notes/#steps")  # noqa: E501
 
