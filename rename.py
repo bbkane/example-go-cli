@@ -71,7 +71,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        "name",
+        "--name",
         help="The name to copy example-go-cli to",
     )
 
@@ -106,6 +106,7 @@ def run(*args: str):
 def main():
     parser = build_parser()
     args = parser.parse_args()
+    name = args.name or input("Enter the new name for the project: ").strip()
 
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.getLevelNamesMapping()[args.log_level])
@@ -116,15 +117,14 @@ def main():
     # copy the example-go-cli directory to the new name
     projects_dir = pathlib.Path(__file__).parent.parent.resolve()
     src_dir = projects_dir / "example-go-cli"
-    dest_dir = projects_dir / args.name
+    dest_dir = projects_dir / name
     logger.info("Copying: %s to %s", src_dir, dest_dir)
     shutil.copytree(src_dir, dest_dir)
 
-    logger.debug("Changing working directory to: %s", os.getcwd())
+    logger.info("Changing working directory to: %s", dest_dir)
     os.chdir(dest_dir)
 
     # git clean
-    logger.info("Cleaning git repository in: %s", dest_dir)
     run("git", "clean", "-fdx")
 
     # remove the .git directory
@@ -138,7 +138,7 @@ def main():
     rename_script.unlink()
 
     # replace 'example-go-cli' with the new name in all files
-    logger.info("Replacing 'example-go-cli' with '%s' in all files", args.name)
+    logger.info("Replacing 'example-go-cli' with '%s' in all files", name)
     for root, dirs, files in dest_dir.walk():
         for file in files:
             file_path: pathlib.Path = pathlib.Path(root) / file
@@ -147,29 +147,25 @@ def main():
                 logger.debug("Skipping binary file: %s", file_path)
                 continue
             text = file_path.read_text(encoding="utf-8")
-            new_text = text.replace("example-go-cli", args.name)
+            new_text = text.replace("example-go-cli", name)
             if new_text != text:
                 logger.debug(
-                    "Replacing 'example-go-cli' with '%s' in: %s", args.name, file_path,
+                    "Replacing 'example-go-cli' with '%s' in: %s", name, file_path,
                 )
                 file_path.write_text(new_text, encoding="utf-8")
 
     # create a new git repository and commit
-    logger.info("Initializing new git repository in: %s", dest_dir)
     run("git", "init")
     run("git", "add", ".")
-    run("git", "commit", "-m", f"Initial commit for {args.name}")
-    logger.info("First commit in: %s", dest_dir)
+    run("git", "commit", "-m", f"Initial commit for {name}")
 
     # create upstream repo, add go topic, and push
-    logger.info("Creating upstream repository for %s", args.name)
-    run("gh", "repo", "create", args.name, "--public", "--source", ".", "--remote", "origin")  # noqa: E501
-    logger.info("Adding 'go' topic to repo")
+    run("gh", "repo", "create", name, "--private", "--source", ".", "--remote", "origin")  # noqa: E501
     run("gh", "repo", "edit", "--add-topic", "go")
-    logger.info("pushing")
     run("git", "push")
 
-    logger.info("Continue steps at: https://www.bbkane.com/blog/go-project-notes/#steps")  # noqa: E501
+    logger.info("Script complete!")
+    logger.info("Continue at: https://www.bbkane.com/blog/go-project-notes/#steps")  # noqa: E501
 
 
 if __name__ == "__main__":
