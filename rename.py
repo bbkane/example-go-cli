@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import copy
+import datetime
 import logging
 import os
-import pathlib
+from pathlib import Path
 import shlex
 import shutil
 import subprocess
@@ -22,6 +24,9 @@ Code at <repo>
 """
 
 logger = logging.getLogger(__name__)
+
+now = datetime.datetime.now().isoformat(timespec='seconds')
+log_file = f"/tmp/{Path(__file__).stem}-{now}.log"
 
 
 class Color:
@@ -53,6 +58,7 @@ class ColorLevelFormatter(logging.Formatter):
         super().__init__(fmt, *args, **kwargs)
 
     def format(self, record):
+        record = copy.copy(record)
         record.levelname = self._color_levelname[record.levelname]
         return super().format(record)
 
@@ -67,7 +73,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--log-level",
         choices=["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         default="INFO",
-        help="log level",
+        help="terminal log level",
+    )
+    parser.add_argument(
+        "--log-file",
+        default=log_file,
+        help=f"log file path (default: {log_file})",
     )
 
     parser.add_argument(
@@ -78,7 +89,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def run(*args: str):
+def run_cmd(*args: str):
     logger.info(f"Running command: {shlex.join(args)}")
     res = subprocess.run(
         args,
@@ -94,6 +105,7 @@ def run(*args: str):
         logger.log(level, f"stdout:\n{res.stdout}")
     else:
         logger.log(level, "no stdout")
+
     if res.stderr:
         logger.log(level, f"stderr:\n{res.stderr}")
     else:
@@ -109,13 +121,21 @@ def main():
     name = args.name or input("Enter the new name for the project: ").strip()
 
     root_logger = logging.getLogger()
-    root_logger.setLevel(logging.getLevelNamesMapping()[args.log_level])
+    root_logger.setLevel(logging.DEBUG)
+
+    file_handler = logging.FileHandler(args.log_file, mode='w', encoding='utf-8')
+    file_handler.setFormatter(logging.Formatter("# %(asctime)s %(levelname)s %(name)s %(filename)s:%(lineno)s\n%(message)s"))  # noqa: E501
+    root_logger.addHandler(file_handler)
+
     stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setLevel(logging.getLevelNamesMapping()[args.log_level])
     stdout_handler.setFormatter(ColorLevelFormatter())
     root_logger.addHandler(stdout_handler)
 
+    logger.info("log file: %s", args.log_file)
+
     # copy the example-go-cli directory to the new name
-    projects_dir = pathlib.Path(__file__).parent.parent.resolve()
+    projects_dir = Path(__file__).parent.parent.resolve()
     src_dir = projects_dir / "example-go-cli"
     dest_dir = projects_dir / name
     logger.info("Copying: %s to %s", src_dir, dest_dir)
@@ -125,7 +145,7 @@ def main():
     os.chdir(dest_dir)
 
     # git clean
-    run("git", "clean", "-fdx")
+    run_cmd("git", "clean", "-fdx")
 
     # remove the .git directory
     git_dir = dest_dir / ".git"
@@ -141,7 +161,7 @@ def main():
     logger.info("Replacing 'example-go-cli' with '%s' in all files", name)
     for root, dirs, files in dest_dir.walk():
         for file in files:
-            file_path: pathlib.Path = pathlib.Path(root) / file
+            file_path: Path = Path(root) / file
             logger.debug("Checking: %s", file_path)
             if file_path.suffix in (".gif",):
                 logger.debug("Skipping binary file: %s", file_path)
@@ -155,17 +175,17 @@ def main():
                 file_path.write_text(new_text, encoding="utf-8")
 
     # create a new git repository and commit
-    run("git", "init")
-    run("git", "add", ".")
-    run("git", "commit", "-m", f"Initial commit for {name}")
+    run_cmd("git", "init")
+    run_cmd("git", "add", ".")
+    run_cmd("git", "commit", "-m", f"Initial commit for {name}")
 
     # create upstream repo, add go topic, and push
-    run("gh", "repo", "create", name, "--private", "--source", ".", "--remote", "origin")  # noqa: E501
-    run("gh", "repo", "edit", "--add-topic", "go")
-    run("git", "push")
+    run_cmd("gh", "repo", "create", name, "--private", "--source", ".", "--remote", "origin")  # noqa: E501
+    run_cmd("gh", "repo", "edit", "--add-topic", "go")
+    run_cmd("git", "push")
 
     logger.info("Script complete!")
-    logger.info("Continue at: https://www.bbkane.com/blog/go-project-notes/#steps")  # noqa: E501
+    logger.warning("Take next steps at: https://www.bbkane.com/blog/go-project-notes/#steps")  # noqa: E501
 
 
 if __name__ == "__main__":
