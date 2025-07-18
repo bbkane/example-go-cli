@@ -6,11 +6,11 @@ import copy
 import datetime
 import logging
 import os
-from pathlib import Path
 import shlex
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 __author__ = "Benjamin Kane"
 __version__ = "0.1.0"
@@ -51,7 +51,7 @@ class ColorLevelFormatter(logging.Formatter):
 
     def __init__(
             self,
-            fmt: str = "%(levelname)s %(filename)s:%(lineno)s : %(message)s",
+            fmt: str = "%(levelname)s %(filename)s:%(lineno)s: %(message)s",
             *args,
             **kwargs,
     ):
@@ -79,6 +79,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--log-file",
         default=log_file,
         help=f"log file path (default: {log_file})",
+    )
+
+    parser.add_argument(
+        "--local-only",
+        action="store_true",
+        help="do not create a remote repository, only initialize git locally",
     )
 
     parser.add_argument(
@@ -152,10 +158,11 @@ def main():
     logger.info("Removing .git directory: %s", git_dir)
     shutil.rmtree(git_dir, ignore_errors=True)
 
-    # remove the rename script
-    rename_script = dest_dir / "rename.py"
-    logger.info("Removing rename script: %s", rename_script)
-    rename_script.unlink()
+    # remove the scripts
+    for script in ("rename.py", "diff_file.py"):
+        script_path = dest_dir / script
+        logger.info("Removing script: %s", script_path)
+        script_path.unlink()
 
     # replace 'example-go-cli' with the new name in all files
     logger.info("Replacing 'example-go-cli' with '%s' in all files", name)
@@ -178,6 +185,10 @@ def main():
     run_cmd("git", "init")
     run_cmd("git", "add", ".")
     run_cmd("git", "commit", "-m", f"Initial commit for {name}")
+
+    if args.local_only:
+        logger.info("Local-only mode enabled, skipping remote repository creation.")
+        return
 
     # create upstream repo, add go topic, and push
     run_cmd("gh", "repo", "create", name, "--private", "--source", ".", "--remote", "origin")  # noqa: E501
