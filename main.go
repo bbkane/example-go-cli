@@ -4,29 +4,25 @@ import (
 	"fmt"
 
 	"go.bbkane.com/warg"
-	"go.bbkane.com/warg/section"
-	"go.bbkane.com/warg/wargcore"
 )
 
 var version string
 
-func buildApp() wargcore.App {
+func buildApp() warg.App {
 	app := warg.New(
 		"example-go-cli",
 		version,
-		section.New(
+		warg.NewSection(
 			"Example Go CLI",
-			section.NewCommand(
+			warg.NewSubCmd(
 				"hello",
 				"Say hello",
-				func(ctx wargcore.Context) error {
+				func(ctx warg.CmdContext) error {
 					fmt.Println("Hello from example-go-cli!")
 					return nil
 				},
 			),
-			section.CommandMap(warg.VersionCommandMap()),
 		),
-		warg.GlobalFlagMap(warg.ColorFlagMap()),
 	)
 	return app
 }
