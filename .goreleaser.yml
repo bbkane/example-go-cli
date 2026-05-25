@@ -16,9 +16,10 @@ brews:
     description: Example Go CLI to model tooling
     directory: Formula
     homepage: https://github.com/bbkane/example-go-cli
+    # https://docs.brew.sh/rubydoc/Formula#generate_completions_from_executable-instance_method
     install: |
       bin.install "example-go-cli"
-      generate_completions_from_executable(bin/"example-go-cli", "completion", shells: [:zsh])
+      generate_completions_from_executable(bin/"example-go-cli", "completion", shells: [:bash, :fish, :zsh])
     repository:
       name: homebrew-tap
       owner: bbkane
