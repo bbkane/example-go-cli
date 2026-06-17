@@ -3,15 +3,13 @@
 All notable changes to this project will be documented in this file. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-# v0.0.15 (Unreleased)
+Please note that the most recent version may not be released yet.
 
-## Added
-
-- write some stuff here
+# v0.0.20
 
 ## Changed
 
-- write the change here
+- Update Homebrew install method and add release validation notes
 
 ## Fixed
 
