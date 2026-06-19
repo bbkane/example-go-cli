@@ -6,34 +6,6 @@ before:
     - go mod download
     # you may remove this if you don't need go generate
     # - go generate ./...
-# https://goreleaser.com/customization/publish/homebrew_casks/
-homebrew_casks:
-  - caveats: |
-      Unfortunately, Apple wants to charge developers $100/year to distribute
-      their apps without a big scary "... the developer cannot be verified"
-      warning. I'm not willing to pay that to give away free apps.
-      See https://www.macworld.com/article/3140183/how-to-install-an-app-in-macos-sierra-thats-not-signed-by-a-developer.html to work around that
-    description: Example Go CLI to model tooling
-    binaries:
-      - example-go-cli
-    generate_completions_from_executable:
-      executable: 'bin/example-go-cli'
-      args:
-        - completion
-      shells:
-        - bash
-        - fish
-        - zsh
-    hooks:
-      post:
-        install: |
-          system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/example-go-cli"] if OS.mac?
-    homepage: https://github.com/bbkane/example-go-cli
-    repository:
-      name: homebrew-tap
-      owner: bbkane
-      # Optionally a token can be provided, if it differs from the token provided to GoReleaser
-      token: '{{ .Env.KEY_GITHUB_GORELEASER_TO_HOMEBREW_TAP }}'
 builds:
   - env:
       - CGO_ENABLED=0
@@ -56,6 +28,34 @@ changelog:
   sort: asc
 checksum:
   name_template: checksums.txt
+# https://goreleaser.com/customization/publish/homebrew_casks/
+homebrew_casks:
+  - binaries:
+      - example-go-cli
+    caveats: |
+      Unfortunately, Apple wants to charge developers $100/year to distribute
+      their apps without a big scary "... the developer cannot be verified"
+      warning. I'm not willing to pay that to give away free apps.
+      See https://www.macworld.com/article/3140183/how-to-install-an-app-in-macos-sierra-thats-not-signed-by-a-developer.html to work around that
+    description: Example Go CLI to model tooling
+    generate_completions_from_executable:
+      args:
+        - completion
+      executable: example-go-cli
+      shells:
+        - bash
+        - fish
+        - zsh
+    homepage: https://github.com/bbkane/example-go-cli
+    hooks:
+      post:
+        install: |
+          system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/example-go-cli"] if OS.mac?
+    repository:
+      name: homebrew-tap
+      owner: bbkane
+      # Optionally a token can be provided, if it differs from the token provided to GoReleaser
+      token: '{{ .Env.KEY_GITHUB_GORELEASER_TO_HOMEBREW_TAP }}'
 scoops:
   - description: Example Go CLI to model tooling
     homepage: https://github.com/bbkane/example-go-cli

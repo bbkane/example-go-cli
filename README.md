@@ -34,36 +34,41 @@ scoop install bbkane/example-go-cli
 
 ## Manual release validation
 
-Use these steps to validate the generated Homebrew cask locally.
-
 Notes:
 
 - `brew style` and `brew audit` currently reject arbitrary cask file paths and expect a cask name in a tap.
 - Some output formatting from generated files may be autocorrectable by Homebrew style tools.
 - `brew audit` may enable Homebrew developer mode automatically.
-- A local-only cask install test is not supported by this config: generated cask URLs point to GitHub release assets.
 
 ```bash
-# 1) Regenerate artifacts from current config.
+# Build snapshot artifacts locally.
 goreleaser release --snapshot --clean --skip=publish
 
-# Cask is written to dist/homebrew/Casks/example-go-cli.rb.
-
-# 2) Create a temporary local tap (one-time).
+# Create a temporary local tap (one-time).
 brew tap-new bbkane/localtest
 
-# 3) Copy generated cask into the local tap.
+# Copy generated cask into the local tap.
 mkdir -p "$(brew --repository)/Library/Taps/bbkane/homebrew-localtest/Casks"
 cp dist/homebrew/Casks/example-go-cli.rb "$(brew --repository)/Library/Taps/bbkane/homebrew-localtest/Casks/example-go-cli.rb"
 
-# 4) Run Homebrew lint/style checks.
+# Rewrite generated GitHub release URLs to local file:// URLs.
+rewrite_goreleaser_cask_urls_to_file.py \
+	"$(brew --repository)/Library/Taps/bbkane/homebrew-localtest/Casks/example-go-cli.rb" \
+	"$PWD/dist"
+
+# Run Homebrew lint/style checks.
 brew style --cask bbkane/localtest/example-go-cli
 brew audit --cask --strict --online bbkane/localtest/example-go-cli
 
-# 5) Cleanup temporary tap.
+# Install and smoke test.
+brew install --cask bbkane/localtest/example-go-cli
+example-go-cli hello
+
+# Cleanup.
+brew uninstall --cask --force bbkane/localtest/example-go-cli
 brew untap bbkane/localtest
 
-# 6) If audit enabled Homebrew developer mode, turn it back off.
+# Disable Homebrew developer mode if it was enabled by tap-new.
 brew developer off
 ```
 
