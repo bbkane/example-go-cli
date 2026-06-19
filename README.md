@@ -20,7 +20,12 @@ example-go-cli hello
 
 ## Install
 
-- [Homebrew](https://brew.sh/): `brew install bbkane/tap/example-go-cli`
+- [Homebrew](https://brew.sh/):
+
+```
+brew install --cask bbkane/tap/example-go-cli
+```
+
 - [Scoop](https://scoop.sh/):
 
 ```
@@ -33,6 +38,8 @@ scoop install bbkane/example-go-cli
 - Build with [goreleaser](https://goreleaser.com/) after cloning: `goreleaser release --snapshot --clean`
 
 ## Manual release validation
+
+TODO: move this to Go tooling blog
 
 Notes:
 
@@ -56,11 +63,13 @@ rewrite_goreleaser_cask_urls_to_file.py \
 	"$(brew --repository)/Library/Taps/bbkane/homebrew-localtest/Casks/example-go-cli.rb" \
 	"$PWD/dist"
 
-# Run Homebrew lint/style checks.
+# some fail due to goreleaser's bad style
 brew style --cask bbkane/localtest/example-go-cli
+
+# for some reason the SHA mismatches?
 brew audit --cask --strict --online bbkane/localtest/example-go-cli
 
-# Install and smoke test.
+# Install and smoke test. NOTE: when testing locally like this, the Apple security warning won't let tab completions install. Seems to work ok when installed from GitHub releases.
 brew install --cask bbkane/localtest/example-go-cli
 example-go-cli hello
 
