@@ -1,13 +1,13 @@
 jobs:
   ci:
     uses: ./.github/workflows/ci.yml
-  setup:
+  release:
     name: Release
     needs: ci
     runs-on: ubuntu-latest
     steps:
       # https://github.com/marketplace/actions/checkout
-      - name: Checkout Repo
+      - name: Checkout repo
         uses: actions/checkout@v4
       # https://github.com/marketplace/actions/setup-go-environment
       - name: Set up Go 1.x >= 1.18
